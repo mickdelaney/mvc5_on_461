@@ -3,16 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MassTransit;
+using MassTransit.Transports.InMemory;
+using WebApplication.Messages;
 
 namespace WebApplication.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        IBus _bus;
+
+        public ValuesController(IBus bus)
+        {
+            _bus = bus;
+        }
+
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<string>> Get()
         {
+            await _bus.Publish(new TraceMessage(Request.Path));
+
             return new string[] { "value1", "value2" };
         }
 
